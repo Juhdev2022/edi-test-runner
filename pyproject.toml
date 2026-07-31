@@ -8,6 +8,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "playwright>=1.61.0",
+    "pydantic>=2.13.4",
 ]
 
 [build-system]
@@ -45,6 +46,7 @@ select = [
 python_version = "3.12"
 strict = true
 files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
