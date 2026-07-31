@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>EDI Enterprise - Log de execução (mock)</title>
+  </head>
+  <body>
+    <h1>Log de execução</h1>
+    <pre id="log-edi"></pre>
+
+    <script>
+      const LOGS = {
+        REGRA_UPLOAD_SFTP_01: {
+          resultado: "SUCESSO",
+          etapas: [
+            {
+              nome: "Preparar arquivo local",
+              status: "SUCESSO",
+              mensagem: null,
+              duracaoSegundos: 1,
+            },
+            { nome: "Conectar SFTP", status: "SUCESSO", mensagem: null, duracaoSegundos: 2 },
+            { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null, duracaoSegundos: 4 },
+            {
+              nome: "Validar recebimento no destino",
+              status: "SUCESSO",
+              mensagem: null,
+              duracaoSegundos: 1,
+            },
+          ],
+        },
+        REGRA_UPLOAD_SFTP_02: {
+          resultado: "FALHA",
+          etapas: [
+            {
+              nome: "Preparar arquivo local",
+              status: "SUCESSO",
+              mensagem: null,
+              duracaoSegundos: 1,
+            },
+            {
+              nome: "Conectar SFTP",
+              status: "FALHA",
+              mensagem: "Certificado FTPS expirado",
+              duracaoSegundos: 3,
+            },
+            { nome: "Enviar arquivo", status: "PULADA", mensagem: null, duracaoSegundos: 0 },
+            {
+              nome: "Validar recebimento no destino",
+              status: "PULADA",
+              mensagem: null,
+              duracaoSegundos: 0,
+            },
+          ],
+        },
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const idRegra = params.get("id");
+      const logEntry = LOGS[idRegra] || null;
+
+      window.__logExecucao = logEntry;
+
+      const logEl = document.getElementById("log-edi");
+      if (logEntry) {
+        const timestampBase = new Date("2026-07-31T10:00:00Z").getTime();
+        logEl.textContent = logEntry.etapas
+          .map(function (etapa, indice) {
+            const timestamp = new Date(timestampBase + indice * 1000).toISOString();
+            return `[${timestamp}] ${etapa.nome}: ${etapa.status}`;
+          })
+          .join("\n");
+      } else {
+        logEl.textContent = `Nenhum log encontrado para "${idRegra}".`;
+      }
+    </script>
+  </body>
+</html>

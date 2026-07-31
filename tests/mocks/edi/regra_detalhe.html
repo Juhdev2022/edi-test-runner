@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>EDI Enterprise - Detalhe da regra (mock)</title>
+  </head>
+  <body>
+    <h1 id="titulo-regra"></h1>
+    <p id="erro-regra" style="display: none; color: red"></p>
+    <button id="aplicar-regra" type="button">Aplicar regra</button>
+    <p>Resultado: <span id="resultado-final"></span></p>
+    <pre id="log-execucao"></pre>
+
+    <script>
+      const REGRAS = {
+        REGRA_UPLOAD_SFTP_01: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar SFTP", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
+        ],
+        REGRA_UPLOAD_SFTP_02: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar SFTP", status: "FALHA", mensagem: "Certificado FTPS expirado" },
+          { nome: "Enviar arquivo", status: "PULADA", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "PULADA", mensagem: null },
+        ],
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const idRegra = params.get("id");
+      const etapas = REGRAS[idRegra];
+
+      const tituloEl = document.getElementById("titulo-regra");
+      const erroEl = document.getElementById("erro-regra");
+      const botaoEl = document.getElementById("aplicar-regra");
+
+      if (!etapas) {
+        tituloEl.textContent = "Regra não encontrada";
+        erroEl.textContent = `A regra "${idRegra}" não está cadastrada no EDI.`;
+        erroEl.style.display = "block";
+        botaoEl.disabled = true;
+      } else {
+        tituloEl.textContent = idRegra;
+
+        botaoEl.addEventListener("click", function () {
+          const logEl = document.getElementById("log-execucao");
+          const resultadoEl = document.getElementById("resultado-final");
+
+          logEl.textContent = etapas
+            .map(function (etapa, indice) {
+              const sufixo = etapa.mensagem ? ` - ${etapa.mensagem}` : "";
+              return `ETAPA ${indice + 1} | ${etapa.nome} | ${etapa.status}${sufixo}`;
+            })
+            .join("\n");
+
+          const falhou = etapas.some((etapa) => etapa.status === "FALHA");
+          resultadoEl.textContent = falhou ? "FALHA" : "SUCESSO";
+        });
+      }
+    </script>
+  </body>
+</html>
