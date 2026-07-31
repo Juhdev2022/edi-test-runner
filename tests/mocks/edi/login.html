@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>EDI Enterprise - Login (mock)</title>
+  </head>
+  <body>
+    <h1>EDI Enterprise</h1>
+    <form id="form-login">
+      <label for="usuario">Usuário</label>
+      <input id="usuario" name="usuario" type="text" />
+
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" />
+
+      <button id="entrar" type="submit">Entrar</button>
+    </form>
+    <p id="erro-login" style="display: none; color: red"></p>
+
+    <script>
+      const USUARIO_VALIDO = "tester.edi";
+      const SENHA_VALIDA = "Senha123!";
+
+      document.getElementById("form-login").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const usuario = document.getElementById("usuario").value;
+        const senha = document.getElementById("senha").value;
+        const erro = document.getElementById("erro-login");
+
+        if (usuario === USUARIO_VALIDO && senha === SENHA_VALIDA) {
+          window.location.href = "dashboard.html";
+        } else {
+          erro.textContent = "Usuário ou senha inválidos.";
+          erro.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>

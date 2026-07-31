@@ -9,6 +9,7 @@ requires-python = ">=3.12"
 dependencies = [
     "playwright>=1.61.0",
     "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
 ]
 
 [build-system]
@@ -55,3 +56,6 @@ addopts = "--cov=edi_test_runner --cov-report=term-missing"
 [tool.coverage.run]
 source = ["src/edi_test_runner"]
 branch = true
+# playwright sync_api usa greenlet internamente; sem isso, o coverage
+# não enxerga a execução das chamadas page.* (fill, click, wait_for_url).
+concurrency = ["greenlet", "thread"]
