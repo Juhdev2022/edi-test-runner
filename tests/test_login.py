@@ -1,26 +1,7 @@
-from collections.abc import Iterator
-from dataclasses import dataclass
-
-import pytest
 from playwright.sync_api import Page
 
 from edi_test_runner.automation.login import login
-
-
-@dataclass(frozen=True)
-class Credenciais:
-    usuario: str
-    senha: str
-
-
-@pytest.fixture
-def credenciais_validas() -> Iterator[Credenciais]:
-    yield Credenciais(usuario="tester.edi", senha="Senha123!")
-
-
-@pytest.fixture
-def credenciais_invalidas() -> Iterator[Credenciais]:
-    yield Credenciais(usuario="tester.edi", senha="senha-errada")
+from tests.conftest import Credenciais
 
 
 def test_login_com_credenciais_validas_redireciona_para_dashboard(
