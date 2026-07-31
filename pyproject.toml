@@ -1,0 +1,55 @@
+[project]
+name = "edi-test-runner"
+version = "0.1.0"
+description = "TestRunner para automação de testes do EDI Enterprise (Python + Playwright + Streamlit)"
+authors = [
+    { name = "julliana leao", email = "jullianamoraes@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.61.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.20,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.1",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = [
+    "CONTEXTO_PROJETO_TESTRUNNER_PYTHON.md",
+    "PROMPT_CLAUDE_CODE_TESTRUNNER_PYTHON.md",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort (organização de imports)
+    "UP",  # pyupgrade (força sintaxe moderna: X | None, list[str], etc.)
+    "B",   # flake8-bugbear (bugs comuns)
+    "C4",  # comprehensions mais idiomáticas
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=edi_test_runner --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/edi_test_runner"]
+branch = true
