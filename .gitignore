@@ -6,6 +6,10 @@ __pycache__/
 # Credenciais — nunca commitar
 .env
 
+# Docs de contexto/planejamento pessoal — não versionados
+CONTEXTO_PROJETO_TESTRUNNER_PYTHON.md
+PROMPT_CLAUDE_CODE_TESTRUNNER_PYTHON.md
+
 # Dados gerados em runtime (execuções e reports)
 data/execucoes/*
 !data/execucoes/.gitkeep
