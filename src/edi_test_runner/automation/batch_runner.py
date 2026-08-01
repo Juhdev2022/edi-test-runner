@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -49,18 +50,22 @@ def executar_bateria(
     cliente: str,
     ambiente: Ambiente,
     regras: list[Regra],
+    on_progresso: Callable[[int, int, Regra], None] | None = None,
 ) -> ResultadoBateria:
     data_inicio = datetime.now()
 
-    execucoes: list[Execucao] = []
-    for regra in regras:
-        if regra.status != "ATIVA":
-            continue
+    regras_ativas = [regra for regra in regras if regra.status == "ATIVA"]
+    total = len(regras_ativas)
 
+    execucoes: list[Execucao] = []
+    for indice, regra in enumerate(regras_ativas, start=1):
         execucao = executar_regra(page, base_url, cliente, ambiente, regra)
         execucoes.append(execucao)
 
         _resetar_para_tela_inicial(page, base_url)
+
+        if on_progresso is not None:
+            on_progresso(indice, total, regra)
 
     data_fim = datetime.now()
 

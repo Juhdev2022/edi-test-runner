@@ -64,6 +64,33 @@ def test_bateria_continua_apos_falha_de_regra(page: Page, edi_mock_url: str) -> 
     ]
 
 
+def test_executar_bateria_chama_on_progresso_para_cada_regra_ativa(
+    page: Page, edi_mock_url: str
+) -> None:
+    regras = [
+        Regra(nome="REGRA_UPLOAD_SFTP_01", tipo="SFTP_UPLOAD", status="ATIVA"),
+        Regra(nome="REGRA_UPLOAD_FTP_04", tipo="FTP_UPLOAD", status="ATIVA"),
+    ]
+    chamadas: list[tuple[int, int, str]] = []
+
+    def registrar(indice: int, total: int, regra: Regra) -> None:
+        chamadas.append((indice, total, regra.nome))
+
+    executar_bateria(
+        page,
+        base_url=edi_mock_url,
+        cliente="CLIENTE_FICTICIO",
+        ambiente="HOMOLOGACAO",
+        regras=regras,
+        on_progresso=registrar,
+    )
+
+    assert chamadas == [
+        (1, 2, "REGRA_UPLOAD_SFTP_01"),
+        (2, 2, "REGRA_UPLOAD_FTP_04"),
+    ]
+
+
 def test_bateria_pula_regras_inativas(page: Page, edi_mock_url: str) -> None:
     regras = [
         Regra(nome="REGRA_UPLOAD_SFTP_01", tipo="SFTP_UPLOAD", status="ATIVA"),
