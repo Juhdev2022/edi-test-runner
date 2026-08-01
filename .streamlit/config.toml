@@ -1,0 +1,28 @@
+# Paleta corporativa neutra (cinza + azul escuro), coerente com o dashboard
+# automation-dashboard-angular. Light é o tema padrão (mais universal em
+# ambiente corporativo); dark também está definido para quem preferir.
+#
+# Como o usuário troca de tema: menu "⋮" no canto superior direito do app
+# → "Settings" → "Theme" → escolher "Light", "Dark" ou "Use system setting".
+# Essa escolha fica salva no navegador do usuário, não precisa mexer aqui.
+
+[theme]
+base = "light"
+
+[theme.light]
+primaryColor = "#1E3A8A"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F5"
+textColor = "#1F2937"
+
+[theme.light.sidebar]
+backgroundColor = "#F0F2F5"
+
+[theme.dark]
+primaryColor = "#60A5FA"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#2C2C2E"
+textColor = "#E5E7EB"
+
+[theme.dark.sidebar]
+backgroundColor = "#2C2C2E"

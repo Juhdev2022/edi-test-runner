@@ -8,7 +8,18 @@ from edi_test_runner.automation.batch_runner import ResultadoBateria, executar_b
 from edi_test_runner.automation.discovery import Regra, descobrir_regras
 from edi_test_runner.automation.health_check import HealthCheckReport, executar_health_check
 from edi_test_runner.core.config import ConfiguracaoEdi, carregar_configuracao_edi
+from edi_test_runner.core.models import Execucao
 from edi_test_runner.reporting.json_writer import listar_execucoes, salvar_resultado_bateria
+
+_NOMES_AMIGAVEIS_CHECK = {
+    "servidor_acessivel": "servidor EDI",
+    "login_valido": "login",
+    "servidor_ftp": "FTP/SFTP",
+    "diretorios": "diretórios",
+}
+
+_COR_STATUS_ETAPA = {"SUCESSO": "green", "FALHA": "red", "PULADA": "gray"}
+_COR_STATUS_EXECUCAO = {"SUCESSO": "green", "FALHA": "red", "PARCIAL": "orange"}
 
 
 @contextmanager
@@ -21,7 +32,10 @@ def _sessao_playwright(headless: bool) -> Iterator[Page]:
     # o problema por completo, ao custo de alguns segundos de start-up do
     # navegador por ação.
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=headless)
+        # slow_mo só quando o navegador é visível: dá pra acompanhar os
+        # cliques a olho nu. Headless continua na velocidade máxima.
+        slow_mo = 500 if not headless else None
+        browser = playwright.chromium.launch(headless=headless, slow_mo=slow_mo)
         try:
             yield browser.new_page()
         finally:
@@ -85,10 +99,28 @@ def _renderizar_sidebar(config: ConfiguracaoEdi) -> None:
 def _renderizar_status_conexao(relatorio: HealthCheckReport | None) -> None:
     if relatorio is None:
         st.sidebar.info("Conexão ainda não verificada.")
-    elif relatorio.pode_executar_testes():
+        return
+
+    if relatorio.pode_executar_testes():
         st.sidebar.success(f"Status: {relatorio.status_geral}")
     else:
         st.sidebar.error(f"Status: {relatorio.status_geral}")
+
+    if relatorio.status_geral == "DEGRADADO":
+        st.sidebar.info(_explicar_degradado(relatorio))
+
+
+def _explicar_degradado(relatorio: HealthCheckReport) -> str:
+    ok = [_NOMES_AMIGAVEIS_CHECK[c.nome] for c in relatorio.checks if c.status == "OK"]
+    pendentes = [_NOMES_AMIGAVEIS_CHECK[c.nome] for c in relatorio.checks if c.status != "OK"]
+
+    partes = []
+    if ok:
+        partes.append(f"{' e '.join(ok)} OK")
+    if pendentes:
+        partes.append(f"checks de {' e '.join(pendentes)} pulados (aguardam ambiente real)")
+
+    return "DEGRADADO — " + "; ".join(partes) + "."
 
 
 def _rodar_bateria_com_progresso(config: ConfiguracaoEdi, regras: list[Regra]) -> None:
@@ -149,25 +181,37 @@ def _renderizar_resultado_bateria(resultado: ResultadoBateria) -> None:
     coluna_sucesso.metric("Sucesso", resultado.total_sucesso)
     coluna_falha.metric("Falha", resultado.total_falha)
 
-    if resultado.status_geral == "SUCESSO":
-        st.success(f"Status geral: {resultado.status_geral}")
-    elif resultado.status_geral == "FALHA":
-        st.error(f"Status geral: {resultado.status_geral}")
-    else:
-        st.warning(f"Status geral: {resultado.status_geral}")
+    cor_geral = _COR_STATUS_EXECUCAO.get(resultado.status_geral, "gray")
+    st.markdown(f"**Status geral:** :{cor_geral}[{resultado.status_geral}]")
 
     for execucao in resultado.execucoes:
         with st.expander(f"{execucao.tipo_teste} — {execucao.status}"):
             if execucao.observacoes:
                 st.write(execucao.observacoes)
+
             for etapa in execucao.etapas:
-                linha = f"{etapa.ordem}. {etapa.nome} — {etapa.status}"
-                if etapa.status == "SUCESSO":
-                    st.success(linha)
-                elif etapa.status == "FALHA":
-                    st.error(f"{linha}: {etapa.mensagem}")
-                else:
-                    st.warning(linha)
+                cor = _COR_STATUS_ETAPA.get(etapa.status, "gray")
+                linha = f"{etapa.ordem}. {etapa.nome} — :{cor}[{etapa.status}]"
+                if etapa.status == "FALHA" and etapa.mensagem:
+                    linha += f" — {etapa.mensagem}"
+                st.markdown(linha)
+
+            with st.expander("Log completo"):
+                st.code(_montar_log_completo(execucao), language="text")
+
+
+def _montar_log_completo(execucao: Execucao) -> str:
+    linhas = [
+        f"[{execucao.data_inicio.isoformat()}] Início — {execucao.tipo_teste} "
+        f"({execucao.cliente} / {execucao.ambiente})"
+    ]
+    for etapa in execucao.etapas:
+        detalhe = f": {etapa.mensagem}" if etapa.mensagem else ""
+        linhas.append(
+            f"  {etapa.ordem}. {etapa.nome} — {etapa.status} ({etapa.duracao_segundos}s){detalhe}"
+        )
+    linhas.append(f"[{execucao.data_fim.isoformat()}] Fim — status: {execucao.status}")
+    return "\n".join(linhas)
 
 
 def _renderizar_aba_regras() -> None:
