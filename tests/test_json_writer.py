@@ -100,3 +100,18 @@ def test_salvar_resultado_bateria_grava_execucoes_e_resumo(tmp_path: Path) -> No
     assert resumo["totalRegras"] == 2
     assert resumo["execucaoIds"] == ["id-1", "id-2"]
     assert len(listar_execucoes(diretorio=tmp_path)) == 2
+
+
+def test_salvar_resultado_bateria_com_lote_vazio_nao_quebra(tmp_path: Path) -> None:
+    resultado = ResultadoBateria(
+        execucoes=[],
+        data_inicio=datetime(2026, 8, 1, 10, 0, 0),
+        data_fim=datetime(2026, 8, 1, 10, 0, 1),
+    )
+
+    caminho_resumo = salvar_resultado_bateria(resultado, diretorio=tmp_path)
+    resumo = json.loads(caminho_resumo.read_text(encoding="utf-8"))
+
+    assert resumo["totalRegras"] == 0
+    assert resumo["execucaoIds"] == []
+    assert listar_execucoes(diretorio=tmp_path) == []

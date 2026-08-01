@@ -60,3 +60,10 @@ branch = true
 # playwright sync_api usa greenlet internamente; sem isso, o coverage
 # não enxerga a execução das chamadas page.* (fill, click, wait_for_url).
 concurrency = ["greenlet", "thread"]
+# ui/ é validada manualmente (Streamlit + Playwright rodando o app de
+# verdade, ver tests/README.md) — decisão consciente desde o M8, não
+# lacuna. Sem isso, o threshold abaixo nunca passaria.
+omit = ["src/edi_test_runner/ui/*"]
+
+[tool.coverage.report]
+fail_under = 95

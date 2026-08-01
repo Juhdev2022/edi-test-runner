@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from edi_test_runner.core.config import carregar_configuracao_edi
 
@@ -27,4 +28,15 @@ def test_variavel_de_ambiente_faltando_lanca_key_error(monkeypatch: pytest.Monke
     monkeypatch.delenv("EDI_AMBIENTE", raising=False)
 
     with pytest.raises(KeyError):
+        carregar_configuracao_edi()
+
+
+def test_ambiente_invalido_lanca_validation_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("EDI_BASE_URL", "http://localhost:8000")
+    monkeypatch.setenv("EDI_USUARIO", "usuario_ficticio")
+    monkeypatch.setenv("EDI_SENHA", "senha_ficticia")
+    monkeypatch.setenv("EDI_CLIENTE", "CLIENTE_FICTICIO")
+    monkeypatch.setenv("EDI_AMBIENTE", "AMBIENTE_QUE_NAO_EXISTE")
+
+    with pytest.raises(ValidationError):
         carregar_configuracao_edi()

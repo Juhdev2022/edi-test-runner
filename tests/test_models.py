@@ -107,6 +107,21 @@ def test_cliente_e_tipo_teste_aceitam_qualquer_string() -> None:
     assert execucao.tipo_teste == "SFTP_UPLOAD"
 
 
+def test_nome_regra_e_obrigatorio() -> None:
+    with pytest.raises(ValidationError):
+        Execucao(
+            id="x",
+            cliente="CLIENTE_FICTICIO",
+            ambiente="HOMOLOGACAO",
+            data_inicio=datetime(2026, 7, 30, 10, 0, 0),
+            data_fim=datetime(2026, 7, 30, 10, 0, 7),
+            duracao_segundos=7,
+            status="SUCESSO",
+            tipo_teste="SFTP_UPLOAD",
+            etapas=[],
+        )
+
+
 def test_campos_opcionais_tem_default_none() -> None:
     etapa = EtapaExecucao(ordem=1, nome="Gerar arquivo", status="SUCESSO", duracao_segundos=2)
 

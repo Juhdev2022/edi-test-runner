@@ -109,6 +109,19 @@ def test_bateria_pula_regras_inativas(page: Page, edi_mock_url: str) -> None:
     assert resultado.total_regras == 1
 
 
+def test_bateria_com_lista_vazia_retorna_resultado_vazio(page: Page, edi_mock_url: str) -> None:
+    resultado = executar_bateria(
+        page,
+        base_url=edi_mock_url,
+        cliente="CLIENTE_FICTICIO",
+        ambiente="HOMOLOGACAO",
+        regras=[],
+    )
+
+    assert resultado.total_regras == 0
+    assert resultado.status_geral == "PARCIAL"
+
+
 def test_bateria_reseta_para_tela_de_regras_entre_execucoes(page: Page, edi_mock_url: str) -> None:
     regras = [Regra(nome="REGRA_UPLOAD_SFTP_01", tipo="SFTP_UPLOAD", status="ATIVA")]
 
