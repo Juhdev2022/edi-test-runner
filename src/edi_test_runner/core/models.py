@@ -33,6 +33,7 @@ class Execucao(EdiModel):
     data_fim: datetime
     duracao_segundos: int
     status: StatusExecucao
+    nome_regra: str
     tipo_teste: str
     etapas: list[EtapaExecucao]
     observacoes: str | None = None

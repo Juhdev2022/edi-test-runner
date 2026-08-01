@@ -18,6 +18,7 @@ def _execucao_exemplo(status: StatusExecucao) -> Execucao:
         data_fim=datetime(2026, 7, 31, 10, 0, 5),
         duracao_segundos=5,
         status=status,
+        nome_regra="REGRA_UPLOAD_SFTP_01",
         tipo_teste="SFTP_UPLOAD",
         etapas=[],
     )

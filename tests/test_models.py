@@ -30,6 +30,7 @@ def _execucao_exemplo() -> Execucao:
         data_fim=datetime(2026, 7, 30, 10, 0, 7),
         duracao_segundos=7,
         status="PARCIAL",
+        nome_regra="REGRA_UPLOAD_SFTP_01",
         tipo_teste="SFTP_UPLOAD",
         etapas=_etapas_exemplo(),
     )
@@ -52,6 +53,7 @@ def test_computed_fields_nao_aceitam_valor_na_construcao() -> None:
             data_fim=datetime(2026, 7, 30, 10, 0, 7),
             duracao_segundos=7,
             status="SUCESSO",
+            nome_regra="REGRA_UPLOAD_SFTP_01",
             tipo_teste="SFTP_UPLOAD",
             etapas=[],
             total_etapas=999,  # type: ignore[call-arg]
@@ -65,6 +67,7 @@ def test_serializacao_json_usa_camel_case_compativel_com_angular() -> None:
 
     assert payload["dataInicio"] == "2026-07-30T10:00:00"
     assert payload["duracaoSegundos"] == 7
+    assert payload["nomeRegra"] == "REGRA_UPLOAD_SFTP_01"
     assert payload["tipoTeste"] == "SFTP_UPLOAD"
     assert payload["totalEtapas"] == 3
     assert payload["etapasComSucesso"] == 1
@@ -82,6 +85,7 @@ def test_validacao_aceita_entrada_em_camel_case() -> None:
             "dataFim": "2026-07-30T10:00:07",
             "duracaoSegundos": 7,
             "status": "SUCESSO",
+            "nomeRegra": "REGRA_DOWNLOAD_FTP_04",
             "tipoTeste": "FTP_DOWNLOAD",
             "etapas": [],
         }

@@ -74,6 +74,7 @@ def executar_regra(
         data_fim=data_fim,
         duracao_segundos=int((data_fim - data_inicio).total_seconds()),
         status=status_geral,
+        nome_regra=regra.nome,
         tipo_teste=regra.tipo,
         etapas=etapas,
         observacoes=_montar_observacoes(etapas, status_geral),

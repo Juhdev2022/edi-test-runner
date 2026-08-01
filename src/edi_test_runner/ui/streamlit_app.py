@@ -11,9 +11,9 @@ from edi_test_runner.core.config import ConfiguracaoEdi, carregar_configuracao_e
 from edi_test_runner.core.models import Execucao
 from edi_test_runner.reporting.json_writer import listar_execucoes, salvar_resultado_bateria
 from edi_test_runner.reporting.report_builder import (
-    gerar_report_execucao,
+    gerar_card_bug,
     montar_log_completo,
-    salvar_report_execucao,
+    salvar_card_bug,
 )
 
 _NOMES_AMIGAVEIS_CHECK = {
@@ -190,7 +190,7 @@ def _renderizar_resultado_bateria(resultado: ResultadoBateria) -> None:
     st.markdown(f"**Status geral:** :{cor_geral}[{resultado.status_geral}]")
 
     for execucao in resultado.execucoes:
-        with st.expander(f"{execucao.tipo_teste} — {execucao.status}"):
+        with st.expander(f"{execucao.nome_regra} — {execucao.status}"):
             if execucao.observacoes:
                 st.write(execucao.observacoes)
 
@@ -204,23 +204,24 @@ def _renderizar_resultado_bateria(resultado: ResultadoBateria) -> None:
             with st.expander("Log completo"):
                 st.code(montar_log_completo(execucao), language="text")
 
-            st.download_button(
-                "Gerar report",
-                data=gerar_report_execucao(execucao),
-                file_name=f"report_{execucao.id}.md",
-                mime="text/markdown",
-                key=f"download_report_{execucao.id}",
-                on_click=_criar_callback_salvar_report(execucao),
-            )
+            if execucao.status == "FALHA":
+                st.download_button(
+                    "Baixar card de bug",
+                    data=gerar_card_bug(execucao),
+                    file_name=f"card_bug_{execucao.id}.md",
+                    mime="text/markdown",
+                    key=f"download_card_bug_{execucao.id}",
+                    on_click=_criar_callback_salvar_card_bug(execucao),
+                )
 
 
-def _criar_callback_salvar_report(execucao: Execucao) -> Callable[[], None]:
+def _criar_callback_salvar_card_bug(execucao: Execucao) -> Callable[[], None]:
     # Vínculo explícito do valor de `execucao` no momento da criação do
     # callback — sem isso, todo botão do loop apontaria para a última
     # execução da lista (closure sobre a variável do loop, não sobre o
     # valor de cada iteração).
     def _salvar() -> None:
-        salvar_report_execucao(execucao)
+        salvar_card_bug(execucao)
 
     return _salvar
 
@@ -256,6 +257,7 @@ def _renderizar_aba_historico() -> None:
             {
                 "Data início": execucao.data_inicio,
                 "Cliente": execucao.cliente,
+                "Regra": execucao.nome_regra,
                 "Tipo": execucao.tipo_teste,
                 "Status": execucao.status,
                 "Duração (s)": execucao.duracao_segundos,
