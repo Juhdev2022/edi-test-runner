@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 
 import streamlit as st
@@ -10,6 +10,11 @@ from edi_test_runner.automation.health_check import HealthCheckReport, executar_
 from edi_test_runner.core.config import ConfiguracaoEdi, carregar_configuracao_edi
 from edi_test_runner.core.models import Execucao
 from edi_test_runner.reporting.json_writer import listar_execucoes, salvar_resultado_bateria
+from edi_test_runner.reporting.report_builder import (
+    gerar_report_execucao,
+    montar_log_completo,
+    salvar_report_execucao,
+)
 
 _NOMES_AMIGAVEIS_CHECK = {
     "servidor_acessivel": "servidor EDI",
@@ -197,21 +202,27 @@ def _renderizar_resultado_bateria(resultado: ResultadoBateria) -> None:
                 st.markdown(linha)
 
             with st.expander("Log completo"):
-                st.code(_montar_log_completo(execucao), language="text")
+                st.code(montar_log_completo(execucao), language="text")
+
+            st.download_button(
+                "Gerar report",
+                data=gerar_report_execucao(execucao),
+                file_name=f"report_{execucao.id}.md",
+                mime="text/markdown",
+                key=f"download_report_{execucao.id}",
+                on_click=_criar_callback_salvar_report(execucao),
+            )
 
 
-def _montar_log_completo(execucao: Execucao) -> str:
-    linhas = [
-        f"[{execucao.data_inicio.isoformat()}] Início — {execucao.tipo_teste} "
-        f"({execucao.cliente} / {execucao.ambiente})"
-    ]
-    for etapa in execucao.etapas:
-        detalhe = f": {etapa.mensagem}" if etapa.mensagem else ""
-        linhas.append(
-            f"  {etapa.ordem}. {etapa.nome} — {etapa.status} ({etapa.duracao_segundos}s){detalhe}"
-        )
-    linhas.append(f"[{execucao.data_fim.isoformat()}] Fim — status: {execucao.status}")
-    return "\n".join(linhas)
+def _criar_callback_salvar_report(execucao: Execucao) -> Callable[[], None]:
+    # Vínculo explícito do valor de `execucao` no momento da criação do
+    # callback — sem isso, todo botão do loop apontaria para a última
+    # execução da lista (closure sobre a variável do loop, não sobre o
+    # valor de cada iteração).
+    def _salvar() -> None:
+        salvar_report_execucao(execucao)
+
+    return _salvar
 
 
 def _renderizar_aba_regras() -> None:
