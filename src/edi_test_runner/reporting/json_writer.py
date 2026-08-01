@@ -16,6 +16,12 @@ EXECUCOES_DIR = Path("data/execucoes")
 # ser descartados antes de reler um JSON que nós mesmos produzimos.
 _CAMPOS_COMPUTADOS = ("totalEtapas", "etapasComSucesso")
 
+# nomeRegra foi adicionado a Execucao depois que este writer já estava em uso
+# (M9). JSONs gravados antes disso em disco não têm essa chave — sem esse
+# fallback, listar_execucoes() quebra com ValidationError ao tentar reler
+# qualquer execução histórica gerada antes da mudança de schema.
+_VALOR_NOME_REGRA_LEGADO = "[legado]"
+
 
 def _slug_timestamp(momento: datetime) -> str:
     return momento.strftime("%Y%m%dT%H%M%S")
@@ -64,6 +70,7 @@ def listar_execucoes(diretorio: Path = EXECUCOES_DIR) -> list[Execucao]:
         dados = json.loads(arquivo.read_text(encoding="utf-8"))
         for campo in _CAMPOS_COMPUTADOS:
             dados.pop(campo, None)
+        dados.setdefault("nomeRegra", _VALOR_NOME_REGRA_LEGADO)
         execucoes.append(Execucao.model_validate(dados))
 
     return execucoes

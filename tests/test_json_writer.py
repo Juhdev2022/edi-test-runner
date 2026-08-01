@@ -54,6 +54,30 @@ def test_listar_execucoes_retorna_mais_recente_primeiro(tmp_path: Path) -> None:
     assert [execucao.id for execucao in execucoes] == ["mais-recente", "mais-antiga"]
 
 
+def test_listar_execucoes_preenche_nome_regra_legado_quando_ausente(tmp_path: Path) -> None:
+    # JSON minimal como os gravados antes de Execucao ganhar nome_regra (M9.1) --
+    # sem essa chave. Não pode quebrar ao reler execuções históricas.
+    dados_legado = {
+        "id": "legado-1",
+        "cliente": "CLIENTE_FICTICIO",
+        "ambiente": "HOMOLOGACAO",
+        "dataInicio": "2026-08-01T10:00:00",
+        "dataFim": "2026-08-01T10:00:05",
+        "duracaoSegundos": 5,
+        "status": "SUCESSO",
+        "tipoTeste": "SFTP_UPLOAD",
+        "etapas": [],
+    }
+    caminho = tmp_path / "execucao_20260801T100000_legado-1.json"
+    caminho.write_text(json.dumps(dados_legado), encoding="utf-8")
+
+    execucoes = listar_execucoes(diretorio=tmp_path)
+
+    assert len(execucoes) == 1
+    assert execucoes[0].nome_regra == "[legado]"
+    assert execucoes[0].tipo_teste == "SFTP_UPLOAD"
+
+
 def test_listar_execucoes_diretorio_inexistente_retorna_lista_vazia(tmp_path: Path) -> None:
     diretorio_inexistente = tmp_path / "nao-existe"
 
