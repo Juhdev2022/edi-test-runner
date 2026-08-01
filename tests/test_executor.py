@@ -33,7 +33,7 @@ def test_executa_regra_com_sucesso_completo(page: Page, edi_mock_url: str) -> No
 
 
 def test_executa_regra_com_falha_e_cascata_de_puladas(page: Page, edi_mock_url: str) -> None:
-    regra = Regra(nome="REGRA_UPLOAD_SFTP_02", tipo="SFTP_UPLOAD", status="ATIVA")
+    regra = Regra(nome="REGRA_DOWNLOAD_FTPS_02", tipo="FTPS_DOWNLOAD", status="ATIVA")
 
     execucao = executar_regra(
         page,
@@ -52,10 +52,10 @@ def test_executa_regra_com_falha_e_cascata_de_puladas(page: Page, edi_mock_url: 
     ]
 
     etapa_falha = execucao.etapas[1]
-    assert etapa_falha.nome == "Conectar SFTP"
+    assert etapa_falha.nome == "Conectar servidor"
     assert etapa_falha.mensagem == "Certificado FTPS expirado"
 
-    assert execucao.observacoes == "Falha na etapa 'Conectar SFTP': Certificado FTPS expirado"
+    assert execucao.observacoes == "Falha na etapa 'Conectar servidor': Certificado FTPS expirado"
 
 
 def test_observacoes_none_quando_status_falha_sem_etapa_com_falha_explicita() -> None:

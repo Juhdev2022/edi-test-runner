@@ -15,15 +15,59 @@
       const REGRAS = {
         REGRA_UPLOAD_SFTP_01: [
           { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
-          { nome: "Conectar SFTP", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
           { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
           { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
         ],
-        REGRA_UPLOAD_SFTP_02: [
+        REGRA_DOWNLOAD_FTPS_02: [
           { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
-          { nome: "Conectar SFTP", status: "FALHA", mensagem: "Certificado FTPS expirado" },
-          { nome: "Enviar arquivo", status: "PULADA", mensagem: null },
+          { nome: "Conectar servidor", status: "FALHA", mensagem: "Certificado FTPS expirado" },
+          { nome: "Baixar arquivo", status: "PULADA", mensagem: null },
           { nome: "Validar recebimento no destino", status: "PULADA", mensagem: null },
+        ],
+        REGRA_VALIDACAO_LAYOUT_03: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
+        ],
+        REGRA_UPLOAD_FTP_04: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
+        ],
+        REGRA_DOWNLOAD_SFTP_05: [
+          {
+            nome: "Preparar arquivo local",
+            status: "FALHA",
+            mensagem: "Diretório de origem inacessível — verifique permissões",
+          },
+          { nome: "Conectar servidor", status: "PULADA", mensagem: null },
+          { nome: "Baixar arquivo", status: "PULADA", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "PULADA", mensagem: null },
+        ],
+        REGRA_NOTIFICACAO_EMAIL_06: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
+        ],
+        REGRA_ARQUIVAMENTO_07: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          {
+            nome: "Validar recebimento no destino",
+            status: "FALHA",
+            mensagem: "Erro de checksum MD5",
+          },
+        ],
+        REGRA_VALIDACAO_ASSINATURA_08: [
+          { nome: "Preparar arquivo local", status: "SUCESSO", mensagem: null },
+          { nome: "Conectar servidor", status: "SUCESSO", mensagem: null },
+          { nome: "Enviar arquivo", status: "SUCESSO", mensagem: null },
+          { nome: "Validar recebimento no destino", status: "SUCESSO", mensagem: null },
         ],
       };
 
