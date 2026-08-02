@@ -75,7 +75,7 @@ Isso existe porque o acesso a um ambiente EDI real de desenvolvimento ainda depe
 
 ## Arquitetura
 
-Fluxo principal: `login` → `descoberta de regras` → `health check` → `execução de regra` (repetida em `bateria`, com reset entre uma e outra) → `persistência JSON` → `geração de card de bug`. Cada etapa é um módulo próprio em `src/edi_test_runner/automation/`, com modelos de dados (Pydantic) compartilhados em `core/models.py` — o mesmo schema que o dashboard [`automation-dashboard-angular`](https://github.com/Juhdev2022/automation-dashboard-angular) consome (ver [Roadmap](#roadmap--fases-futuras)).
+Fluxo principal: `login` → `descoberta de regras` → `health check` → `execução de regra` (repetida em `bateria`, com reset entre uma e outra) → `persistência JSON` → `geração de card de bug`. Cada etapa é um módulo próprio em `src/edi_test_runner/automation/`, com modelos de dados (Pydantic) compartilhados em `core/models.py` — o mesmo schema que o dashboard `automation-dashboard-angular` consome (ver [Roadmap](#roadmap--fases-futuras)). Repositório do dashboard: atualmente privado (em refatoração para portfólio público).
 
 Detalhes de cada módulo, decisões técnicas e diagrama completo: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
