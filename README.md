@@ -96,18 +96,15 @@ uv run pytest -v       # testes + cobertura
 
 ## Roadmap / Fases futuras
 
-**Fase 1 (atual):** ✅ Concluída
-- Mock HTML, execução isolada, bateria completa, interface Streamlit, card de bug
-
-**Fase 2 (próxima):** 🔲 Integração com `automation-dashboard-angular`
-- Publicar JSON de execução em local acessível pelo dashboard
-- Dashboard consome dados reais do TestRunner em vez de mock
-- Repositório do dashboard: [github.com/Juhdev2022/automation-dashboard-angular](https://github.com/Juhdev2022/automation-dashboard-angular)
+**Fase 1 — Base local com mock:** 🔧 Em finalização
+- ✅ Mock HTML, execução isolada, bateria, interface Streamlit, card de bug
+- ✅ Testes e coverage
+- 🔧 Documentação (README, arquitetura, guia de nova regra)
+- 🔲 Integração com `automation-dashboard-angular` (M12)
 
 **Camada futura:** 🔲 IA para classificação de falhas
-- Condicional a autorização institucional da organização onde o projeto é usado profissionalmente — nenhuma decisão da Fase 1 pressupõe que essa fase vai acontecer
+- Condicional a autorização institucional
 - Análise semântica de log, sugestão de causa raiz, priorização
-- Inclui auto-preenchimento inteligente dos campos de julgamento humano no card de bug
 
 **CI/CD:** 🔲 Ainda não implementado, deliberadamente (fora de escopo da Fase 1)
 
