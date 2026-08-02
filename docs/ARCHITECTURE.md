@@ -12,6 +12,8 @@ flowchart LR
     D --> E[batch_runner: executar_bateria]
     E --> F[json_writer: persistência]
     F --> G[report_builder: card de bug]
+    F --> I[dashboard_publisher: opcional]
+    I -.arquivo, mesma origem, sem CORS.-> J[dashboard Angular]
     H[streamlit_app] -.orquestra todos os módulos acima.-> A
 ```
 
@@ -30,6 +32,7 @@ Cada seta é uma fronteira de módulo, não uma chamada direta obrigatória — 
 | `automation/batch_runner.py` | Roda todas as regras ativas em sequência, com reset entre uma e outra e agregado de lote |
 | `reporting/json_writer.py` | Persiste `Execucao`/lote em `data/execucoes/*.json` e relê o histórico |
 | `reporting/report_builder.py` | Monta o card de bug (Markdown semi-preenchido) a partir de uma execução com falha |
+| `reporting/dashboard_publisher.py` | Consolida o histórico num array JSON único, publicado em `DASHBOARD_ASSETS_DIR` (opcional, nunca automático) |
 | `ui/streamlit_app.py` | Interface web — orquestra os módulos acima, sem lógica de negócio própria |
 
 ## Modelo de dados
@@ -48,7 +51,13 @@ Vale saber destas antes de mexer em código relacionado:
 - **`coverage.py` subestima cobertura de código que usa Playwright síncrono.** A API síncrona usa `greenlet` por baixo; sem `concurrency = ["greenlet", "thread"]` em `[tool.coverage.run]`, funções inteiras aparecem com metade da cobertura mesmo com teste passando.
 - **`computed_field` + `extra="forbid"` quebra round-trip de serialização.** Um campo computado aparece no JSON de saída, mas o mesmo `extra="forbid"` que impede alguém de setá-lo manualmente também rejeita essa chave na entrada. Reler o próprio JSON gerado exige descartar essas chaves antes de validar (`json_writer.py`).
 - **Playwright síncrono não sobrevive a `@st.cache_resource` no Streamlit.** A conexão fica presa à thread do sistema operacional que a criou, e o Streamlit reexecuta cada interação em threads diferentes — cachear uma `Page` entre reruns quebra com erro de troca de thread. A solução foi abrir e fechar o Playwright inteiro dentro de cada ação (um context manager), nunca cacheado.
-- **Mudança de schema exige checar o lado espelhado.** `Execucao` é lida pelo dashboard Angular (schema em TypeScript); qualquer campo novo (como `nome_regra`, adicionado depois que o card de bug precisou do nome específico da regra, não só do tipo) precisa ser considerado nos dois lados quando a integração real acontecer (ver [Roadmap](../README.md#roadmap--fases-futuras) no README).
+- **Mudança de schema exige checar o lado espelhado.** `Execucao` é lida pelo dashboard Angular (schema em TypeScript); qualquer campo novo (como `nome_regra`, adicionado depois que o card de bug precisou do nome específico da regra, não só do tipo) precisa ser refletido nos dois lados — feito na integração do M12 (ver abaixo).
+
+## Integração com o dashboard Angular
+
+Publicação é um passo **explícito e opcional** (`dashboard_publisher.py`, disparado por um botão na UI) — nunca automático dentro do fluxo normal de execução, pra manter o TestRunner funcionando isoladamente sem o dashboard. Consolida `data/execucoes/*.json` num único array e grava direto na pasta `src/assets/` do projeto do dashboard (caminho configurável via `DASHBOARD_ASSETS_DIR` no `.env`) — mesma origem que o `ng serve` já serve, sem precisar de servidor novo nem de configurar CORS.
+
+Essa é a arquitetura permanente de desenvolvimento local (dois projetos rodando lado a lado na mesma máquina), não um estágio transitório — não há hosting real para nenhum dos dois projetos ainda.
 
 ## Ambiente de teste e testes automatizados
 

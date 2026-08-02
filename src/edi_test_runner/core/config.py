@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -24,3 +25,11 @@ def carregar_configuracao_edi() -> ConfiguracaoEdi:
         cliente=os.environ["EDI_CLIENTE"],
         ambiente=os.environ["EDI_AMBIENTE"],
     )
+
+
+def obter_dashboard_assets_dir() -> Path | None:
+    # Opcional (ao contrário de ConfiguracaoEdi): publicar para o dashboard
+    # é um passo explícito e independente do fluxo principal do TestRunner,
+    # que precisa continuar rodando sem essa variável configurada.
+    valor = os.environ.get("DASHBOARD_ASSETS_DIR")
+    return Path(valor) if valor else None

@@ -26,6 +26,7 @@ A ferramenta anterior funcionava, mas não produzia dados estruturados, não tin
 - **Reset entre execuções** e **bateria completa** com continue-on-failure
 - **Interface web (Streamlit)**: descoberta, seleção, progresso em tempo real, histórico
 - **Geração de card de bug** semi-preenchido a partir do resultado de uma falha, pronto para abrir chamado
+- **Publicação para o dashboard Angular** — consolida o histórico num único JSON, opcional e explícita, sem acoplar o TestRunner ao dashboard
 
 ## O que este projeto NÃO faz
 
@@ -92,15 +93,15 @@ uv run mypy .          # tipagem estrita
 uv run pytest -v       # testes + cobertura
 ```
 
-60 testes, **100% de cobertura em toda a lógica** (`core/`, `automation/`, `reporting/`), com threshold mínimo de 95% configurado em `pyproject.toml`. A interface Streamlit (`ui/streamlit_app.py`) fica fora dessa métrica por decisão consciente — é validada manualmente, rodando o app de verdade, não por testes automatizados. Detalhes de padrão de fixtures e por quê: [`tests/README.md`](tests/README.md).
+66 testes, **100% de cobertura em toda a lógica** (`core/`, `automation/`, `reporting/`), com threshold mínimo de 95% configurado em `pyproject.toml`. A interface Streamlit (`ui/streamlit_app.py`) fica fora dessa métrica por decisão consciente — é validada manualmente, rodando o app de verdade, não por testes automatizados. Detalhes de padrão de fixtures e por quê: [`tests/README.md`](tests/README.md).
 
 ## Roadmap / Fases futuras
 
 **Fase 1 — Base local com mock:** 🔧 Em finalização
 - ✅ Mock HTML, execução isolada, bateria, interface Streamlit, card de bug
 - ✅ Testes e coverage
-- 🔧 Documentação (README, arquitetura, guia de nova regra)
-- 🔲 Integração com `automation-dashboard-angular` (M12)
+- ✅ Documentação (README, arquitetura, guia de nova regra)
+- ✅ Integração local com `automation-dashboard-angular` (M12) — publicação explícita e opcional (botão na sidebar), arquitetura permanente de desenvolvimento local, não um estágio transitório. Repositório do dashboard atualmente privado (ver nota acima).
 
 **Camada futura:** 🔲 IA para classificação de falhas
 - Condicional a autorização institucional

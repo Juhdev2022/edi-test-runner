@@ -7,8 +7,13 @@ from playwright.sync_api import Page, sync_playwright
 from edi_test_runner.automation.batch_runner import ResultadoBateria, executar_bateria
 from edi_test_runner.automation.discovery import Regra, descobrir_regras
 from edi_test_runner.automation.health_check import HealthCheckReport, executar_health_check
-from edi_test_runner.core.config import ConfiguracaoEdi, carregar_configuracao_edi
+from edi_test_runner.core.config import (
+    ConfiguracaoEdi,
+    carregar_configuracao_edi,
+    obter_dashboard_assets_dir,
+)
 from edi_test_runner.core.models import Execucao
+from edi_test_runner.reporting.dashboard_publisher import publicar_execucoes_para_dashboard
 from edi_test_runner.reporting.json_writer import listar_execucoes, salvar_resultado_bateria
 from edi_test_runner.reporting.report_builder import (
     gerar_card_bug,
@@ -99,6 +104,25 @@ def _renderizar_sidebar(config: ConfiguracaoEdi) -> None:
             ]
             st.session_state.solicitar_execucao = True
             st.rerun()
+
+    st.sidebar.divider()
+    _renderizar_publicacao_dashboard()
+
+
+def _renderizar_publicacao_dashboard() -> None:
+    st.sidebar.markdown("**Dashboard Angular**")
+
+    diretorio_dashboard = obter_dashboard_assets_dir()
+    if diretorio_dashboard is None:
+        st.sidebar.caption("Configure DASHBOARD_ASSETS_DIR no .env pra habilitar publicação.")
+        return
+
+    execucoes_existentes = listar_execucoes()
+    if st.sidebar.button("Publicar para dashboard", disabled=not execucoes_existentes):
+        resultado = publicar_execucoes_para_dashboard(diretorio_dashboard)
+        st.sidebar.success(
+            f"Publicado {resultado.total_execucoes} execuções em {resultado.caminho}"
+        )
 
 
 def _renderizar_status_conexao(relatorio: HealthCheckReport | None) -> None:
