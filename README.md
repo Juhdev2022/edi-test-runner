@@ -27,6 +27,13 @@ A ferramenta anterior funcionava, mas não produzia dados estruturados, não tin
 - **Interface web (Streamlit)**: descoberta, seleção, progresso em tempo real, histórico
 - **Geração de card de bug** semi-preenchido a partir do resultado de uma falha, pronto para abrir chamado
 
+## O que este projeto NÃO faz
+
+- Não conecta em ambientes de produção
+- Não substitui um sistema EDI corporativo
+- Não gera testes automaticamente por IA (camada futura, condicional a autorização institucional)
+- Não é uma solução multi-tenant
+
 ## Stack técnica
 
 - **Python 3.12+**, tipagem completa (sem `Any` sem justificativa)
@@ -40,7 +47,7 @@ A ferramenta anterior funcionava, mas não produzia dados estruturados, não tin
 
 ![Tela de execução do EDI Test Runner, mostrando o resultado de uma bateria com 5 regras (3 sucesso, 2 falha), etapas coloridas por status e o botão de gerar card de bug](docs/screenshot-streamlit.png)
 
-*Dados 100% sintéticos — nomes de regra e cliente fictícios, gerados contra um ambiente de teste mockado (ver [Ambiente de teste](#ambiente-de-teste-mock)).*
+*Dados 100% sintéticos — nomes de regra e cliente fictícios, gerados contra um ambiente de teste mockado (ver [Ambiente de teste](#ambiente-de-teste-fase-1)).*
 
 ## Como rodar localmente
 
@@ -60,9 +67,9 @@ uv run streamlit run src/edi_test_runner/ui/streamlit_app.py
 uv run pytest -v
 ```
 
-## Ambiente de teste (mock)
+## Ambiente de teste (Fase 1)
 
-A Fase 1 deste projeto roda inteiramente contra um **ambiente de teste sintético**: páginas HTML estáticas em `tests/mocks/edi/` simulam as telas do sistema EDI real (login, listagem de regras, detalhe de regra, log de execução), servidas por um servidor HTTP local. Nenhum dado real de cliente aparece em código, fixture ou commit — nomes de regra, credenciais e resultados são todos fictícios.
+> **Nenhum dado real de cliente aparece neste repositório.** Toda automação (login, descoberta, execução) roda contra páginas HTML estáticas em `tests/mocks/edi/` — login, listagem de regras, detalhe de regra, log de execução — servidas por um servidor HTTP local. Nomes de regra, credenciais e resultados são 100% fictícios, em código, fixture e commit.
 
 Isso existe porque o acesso a um ambiente EDI real de desenvolvimento ainda depende de autorização institucional. A arquitetura foi pensada para que trocar do mock para um ambiente real seja só uma mudança de URL no `.env` — nenhum módulo de automação (login, descoberta, execução) assume que está falando com um mock.
 
@@ -89,9 +96,20 @@ uv run pytest -v       # testes + cobertura
 
 ## Roadmap / Fases futuras
 
-- **Fase 2 (integração com dashboard):** o JSON gerado por este projeto é consumido pelo [`automation-dashboard-angular`](https://github.com/Juhdev2022/automation-dashboard-angular), substituindo os dados mockados que o dashboard usa hoje por execuções reais.
-- **Camada de IA (condicional):** classificação de falhas e sugestão de causa raiz, incluindo auto-preenchimento inteligente dos campos de julgamento humano no card de bug. Fica pendente de autorização institucional da organização onde o projeto é usado profissionalmente — nenhuma decisão da Fase 1 pressupõe que essa fase vai acontecer.
-- **CI/CD:** ainda não implementado, deliberadamente (fora de escopo da Fase 1).
+**Fase 1 (atual):** ✅ Concluída
+- Mock HTML, execução isolada, bateria completa, interface Streamlit, card de bug
+
+**Fase 2 (próxima):** 🔲 Integração com `automation-dashboard-angular`
+- Publicar JSON de execução em local acessível pelo dashboard
+- Dashboard consome dados reais do TestRunner em vez de mock
+- Repositório do dashboard: [github.com/Juhdev2022/automation-dashboard-angular](https://github.com/Juhdev2022/automation-dashboard-angular)
+
+**Camada futura:** 🔲 IA para classificação de falhas
+- Condicional a autorização institucional da organização onde o projeto é usado profissionalmente — nenhuma decisão da Fase 1 pressupõe que essa fase vai acontecer
+- Análise semântica de log, sugestão de causa raiz, priorização
+- Inclui auto-preenchimento inteligente dos campos de julgamento humano no card de bug
+
+**CI/CD:** 🔲 Ainda não implementado, deliberadamente (fora de escopo da Fase 1)
 
 ## Licença
 
