@@ -9,7 +9,7 @@ uv run pytest tests/test_executor.py -v   # só um arquivo
 
 ## Padrão de fixtures (`tests/conftest.py`)
 
-Todo o suite roda contra mocks HTML estáticos em `tests/mocks/edi/`, nunca contra o EDI Enterprise real (fase 1 do projeto — ver `CONTEXTO_PROJETO_TESTRUNNER_PYTHON.md`). O padrão se repete em praticamente todo teste de automação:
+Todo o suite roda contra mocks HTML estáticos em `tests/mocks/edi/`, nunca contra o sistema EDI corporativo real (fase 1 do projeto — ver `CONTEXTO_PROJETO_TESTRUNNER_PYTHON.md`). O padrão se repete em praticamente todo teste de automação:
 
 **`browser` (session) → `page` (por teste).** Um único Chromium fica de pé pra sessão inteira de testes (caro de subir); cada teste recebe sua própria aba (`page`), fechada ao final. Exemplo mínimo: `test_login.py`.
 

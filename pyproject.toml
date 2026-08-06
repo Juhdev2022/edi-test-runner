@@ -1,7 +1,7 @@
 [project]
 name = "edi-test-runner"
 version = "0.1.0"
-description = "TestRunner para automação de testes do EDI Enterprise (Python + Playwright + Streamlit)"
+description = "TestRunner para automação de testes de sistema EDI corporativo (Python + Playwright + Streamlit)"
 authors = [
     { name = "julliana leao", email = "jullianamoraes@gmail.com" }
 ]
